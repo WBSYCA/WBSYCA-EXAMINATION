@@ -1,0 +1,98 @@
+<PP02.html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="wbsyca_logo.png">
+    <title>Modify Registration (PP-02)</title>
+    <style>
+        /* ... (keep existing styles unchanged) ... */
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="https://i.postimg.cc/nr188Fzp/header.jpg" alt="Header Image">
+        <div>Modify Registration (PP-02)</div>
+    </div>
+    
+    <div class="container">
+        <label>Enter Roll No:</label>
+        <input type="text" id="searchRollNo">
+        <button onclick="searchPP02()">Search</button>
+        <button onclick="approvePP02()">Approve</button>
+        
+        <form id="pp02Form">
+            <!-- Keep all form inputs as before -->
+        </form>
+        
+        <div class="home-icon">
+            <a href="dashboard.html">
+                <img src="https://i.postimg.cc/C5T7qW4n/pngwing-com-3.png" alt="Home">
+            </a>
+        </div>
+    </div>
+    
+    <div class="footer">&copy; 2025 WBSYCA. All Rights Reserved.</div>
+
+    <script>
+        function searchPP02() {
+            const rollNo = document.getElementById("searchRollNo").value.trim();
+            if (!rollNo) return alert("Please enter Roll No.");
+            
+            fetch('https://script.google.com/macros/s/AKfycbzdDLMyia9LY7WwyZn_KhX4WDXn2bS-PUTxf_JR64S8tu3tGS3nRlMEuS8o95YR_hvM_Q/exec?query=' + encodeURIComponent(rollNo))
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length === 0) return alert("No data found");
+                    const row = data[0];
+                    // Populate form fields...
+                })
+                .catch(err => alert("Error: " + err));
+        }
+
+        function approvePP02() {
+            const rollNo = document.getElementById("searchRollNo").value.trim();
+            if (!rollNo) return alert("Enter Roll No.");
+            
+            fetch('https://script.google.com/macros/s/AKfycbzdDLMyia9LY7WwyZn_KhX4WDXn2bS-PUTxf_JR64S8tu3tGS3nRlMEuS8o95YR_hvM_Q/exec', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({action: 'approve', roll: rollNo})
+            })
+            .then(res => res.text())
+            .then(result => alert(result === "APPROVED" ? "Success!" : result))
+            .catch(err => alert("Error: " + err));
+        }
+
+        document.getElementById("pp02Form").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const rollNo = document.getElementById("searchRollNo").value.trim();
+            if (!rollNo) return alert("Search Roll No first");
+            
+            const formData = {
+                action: 'modify',
+                roll: rollNo,
+                fields: {
+                    // Map form fields to sheet columns
+                    'REGISTRATION NO': document.getElementById("registrationNo").value.toUpperCase(),
+                    // ... map all other fields ...
+                    'DOB': formatDOB(document.getElementById("dob").value)
+                }
+            };
+
+            fetch('https://script.google.com/macros/s/AKfycbzdDLMyia9LY7WwyZn_KhX4WDXn2bS-PUTxf_JR64S8tu3tGS3nRlMEuS8o95YR_hvM_Q/exec', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(formData)
+            })
+            .then(res => res.text())
+            .then(result => alert(result === "MODIFIED" ? "Success!" : result))
+            .catch(err => alert("Error: " + err));
+        });
+
+        function formatDOB(dob) {
+            const [year, month, day] = dob.split('-');
+            return `${day}/${month}/${year}`;
+        }
+    </script>
+</body>
+</html>
